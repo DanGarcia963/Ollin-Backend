@@ -157,16 +157,32 @@ registrarUsuarioTurista = async (req, res) => {
     }
   }
 
-  obtenerUsuarioLogueado = async (req, res) => {
-    const { token } = req.body
+obtenerUsuarioLogueado = async (req, res) => {
+    try {
+      // 1. Buscamos el token en las cookies primero (o en el body por si acaso)
+      const token = req.cookies?.jwt || req.body?.token;
 
-    const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET)
+      // 2. Si de plano no hay token, rechazamos amablemente sin crashear el servidor
+      if (!token) {
+        return res.status(401).json({ status: 'error', message: 'No hay sesión activa' });
+      }
 
-    const usuarioARevisar = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(decodificada.Correo)
+      // 3. Verificamos el token
+      const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET)
 
-    if (usuarioARevisar.length === 0) return false
+      const usuarioARevisar = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(decodificada.Correo)
 
-    res.json(usuarioARevisar)
+      if (!usuarioARevisar || usuarioARevisar.length === 0) {
+          return res.json(false)
+      }
+
+      res.json(usuarioARevisar)
+      
+    } catch (error) {
+      // Si el token expiró o es falso, atrapamos el error aquí y no matamos al servidor
+      console.error("Error al verificar token de sesión:", error.message);
+      return res.status(401).json({ status: 'error', message: 'Token inválido o expirado' });
+    }
   }
 
   guardarUltimoLogin = async (req, res) => {
