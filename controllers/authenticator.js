@@ -5,47 +5,48 @@ import { generarTokenParaCorreo } from '../helpers/token.js'
 import jsonwebtoken from 'jsonwebtoken'
 
 dotenv.config()
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
+
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-escom.netlify.app'
+
 export class AuthenticatorController {
   constructor (Modelos) {
     this.usuarioTuristaModel = Modelos.UsuarioTuristaModel
     this.authenticatorModel = Modelos.AuthenticatorModel
   }
 
-registrarUsuarioTurista = async (req, res) => {
-  const resultado = validarUsuarioTurista(req.body)
-  
-  if (!resultado.success) {
-    return res.status(400).json({ error: JSON.parse(resultado.error.message) })
+  registrarUsuarioTurista = async (req, res) => {
+    const resultado = validarUsuarioTurista(req.body)
+    
+    if (!resultado.success) {
+      return res.status(400).json({ error: JSON.parse(resultado.error.message) })
+    }
+
+    const nuevoUsuarioTurista = await this.authenticatorModel.registrarUsuarioTurista({ entrada: resultado.data })
+
+    if (!nuevoUsuarioTurista || typeof nuevoUsuarioTurista === 'string') {
+      return res.send({ status: 401, message: nuevoUsuarioTurista || 'Error al crear usuario' })
+    }
+
+    console.log("👤 Usuario creado:", nuevoUsuarioTurista)
+
+    const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioTurista.Correo)
+
+    const mail = await enviarEmailVerificacion(
+      nuevoUsuarioTurista.Correo,
+      nuevoUsuarioTurista.Nombre,
+      tokenVerificacion
+    )
+
+    if (!mail || mail.response.statusText !== 'OK') {
+      return res.send({ status: 500, message: 'Error enviando correo de verificación' })
+    }
+
+    res.send({
+      status: 201,
+      message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
+      redirect: '/cuenta_creada'
+    })
   }
-
-  const nuevoUsuarioTurista = await this.authenticatorModel.registrarUsuarioTurista({ entrada: resultado.data })
-
-  if (!nuevoUsuarioTurista || typeof nuevoUsuarioTurista === 'string') {
-  return res.send({ status: 401, message: nuevoUsuarioTurista || 'Error al crear usuario' })
-}
-
-  // 🔍 DEBUG (muy útil)
-  console.log("👤 Usuario creado:", nuevoUsuarioTurista)
-
-  const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioTurista.Correo)
-
-  const mail = await enviarEmailVerificacion(
-    nuevoUsuarioTurista.Correo,
-    nuevoUsuarioTurista.Nombre,
-    tokenVerificacion
-  )
-
-  if (!mail || mail.response.statusText !== 'OK') {
-    return res.send({ status: 500, message: 'Error enviando correo de verificación' })
-  }
-
-  res.send({
-    status: 201,
-    message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
-    redirect: `${FRONTEND_URL}/`
-  })
-}
 
   login = async (req, res) => {
     const usuarioLogueado = await this.authenticatorModel.login({ entrada: req.body })
@@ -58,15 +59,15 @@ registrarUsuarioTurista = async (req, res) => {
 
     const token = generarTokenParaCorreo(usuarioLogueado.Correo)
 
-    const cookieOption = {
-      expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
-      path: `${FRONTEND_URL}/`
-    }
-
     await this.authenticatorModel.guardarUltimoLogin(usuarioLogueado.Correo)
 
-    res.cookie('jwt', token, cookieOption)
-    res.send({ status: 201, message: `Usuario ${usuarioLogueado.Nombre} logueado`, redirect: `${FRONTEND_URL}/inicio` })
+    // ¡ADIÓS COOKIES, HOLA TOKEN DIRECTO!
+    res.send({ 
+      status: 201, 
+      message: `Usuario ${usuarioLogueado.Nombre} logueado`, 
+      redirect: `${FRONTEND_URL}/inicio`,
+      token: token // Enviamos la llave maestra al frontend
+    })
   }
 
   verificarCuenta = async (req, res) => {
@@ -77,28 +78,18 @@ registrarUsuarioTurista = async (req, res) => {
 
       if (!tokenDecodificado || !tokenDecodificado.Correo) return res.send({ status: 'error', message: 'Error en el token', redirect: `${FRONTEND_URL}/` })
 
-      const usuarioLogueado = await this.authenticatorModel.verificarCuenta(tokenDecodificado.Correo)
+      await this.authenticatorModel.verificarCuenta(tokenDecodificado.Correo)
 
-      const token = generarTokenParaCorreo(usuarioLogueado.Correo)
-
-      const cookieOption = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
-        path: `${FRONTEND_URL}/`
-      }
-
-      res.cookie('jwt', token, cookieOption)
-      res.redirect(`${FRONTEND_URL}/`)
+      res.redirect(`${FRONTEND_URL}/Cuenta_verificada.html`)
     } catch (error) {
-      res.send({ status: 500, redirect: `${FRONTEND_URL}/` })
+      res.redirect(`${FRONTEND_URL}/`)
     }
   }
 
   olvidarContrasena = async (req, res) => {
     try {
       const usuarioTurista = await this.authenticatorModel.olvidarContrasena(req.body.Correo)
-
       const tokenOlvidarContrasena = generarTokenParaCorreo(usuarioTurista.Correo)
-
       const mail = await enviarEmailRecuperarContrasena(usuarioTurista.Correo, usuarioTurista.Nombre, tokenOlvidarContrasena)
 
       if (mail.response.statusText !== 'OK') {
@@ -109,7 +100,7 @@ registrarUsuarioTurista = async (req, res) => {
         return res.send({ status: 401, error: usuarioTurista })
       }
 
-      res.send({ status: 201, message: `Se ha enviado un correo a ${usuarioTurista.Correo} para crear un nueva contraeña`, redirect: `${FRONTEND_URL}/` })
+      res.send({ status: 201, message: `Se ha enviado un correo a ${usuarioTurista.Correo} para crear un nueva contraseña`, redirect: `${FRONTEND_URL}/` })
     } catch (error) {
       res.send({ status: 500, redirect: `${FRONTEND_URL}/`, message: error })
     }
@@ -121,24 +112,18 @@ registrarUsuarioTurista = async (req, res) => {
 
       const tokenDecodificado = jsonwebtoken.verify(req.params.token, process.env.JWT_SECRET)
 
-      if (!tokenDecodificado || !tokenDecodificado.Correo) return res.send({ status: 'error', message: 'Error en el token', redirect: `${FRONTEND_URL}/` })
+      if (!tokenDecodificado || !tokenDecodificado.Correo) return res.redirect(`${FRONTEND_URL}/`)
 
-      const cookieOption = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
-        path: `${FRONTEND_URL}/`
-      }
-
-      res.cookie('rct', req.params.token, cookieOption)
-      res.redirect(`${FRONTEND_URL}/recuperarContrasena`)
+      // Aquí sí usamos redirección con parámetros en URL para pasar el token sin cookies
+      res.redirect(`${FRONTEND_URL}/cambiar_contraseña?token=${req.params.token}`)
     } catch (error) {
-      res.send({ status: 500, redirect: `${FRONTEND_URL}/` })
+      res.redirect(`${FRONTEND_URL}/`)
     }
   }
 
   establecerNuevaContrasena = async (req, res) => {
     try {
-      console.log(req.body)
-      if (!req.body.Token) return res.redirect(`${FRONTEND_URL}/`)
+      if (!req.body.Token) return res.send({ status: 400, message: 'Falta Token', redirect: `${FRONTEND_URL}/` })
 
       const tokenDecodificado = jsonwebtoken.verify(req.body.Token, process.env.JWT_SECRET)
 
@@ -157,31 +142,31 @@ registrarUsuarioTurista = async (req, res) => {
     }
   }
 
-obtenerUsuarioLogueado = async (req, res) => {
+  obtenerUsuarioLogueado = async (req, res) => {
     try {
-      // 1. Buscamos el token en las cookies primero (o en el body por si acaso)
-      const token = req.cookies?.jwt || req.body?.token;
+      // Recibe el token del body que le manda tu nuevo admin.js
+      const { token } = req.body;
 
-      // 2. Si de plano no hay token, rechazamos amablemente sin crashear el servidor
       if (!token) {
-        return res.status(401).json({ status: 'error', message: 'No hay sesión activa' });
+        return res.status(401).json(false);
       }
 
-      // 3. Verificamos el token
       const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET)
 
-      const usuarioARevisar = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(decodificada.Correo)
+      let usuarioARevisar = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(decodificada.Correo)
 
-      if (!usuarioARevisar || usuarioARevisar.length === 0) {
-          return res.json(false)
+      if (!usuarioARevisar || usuarioARevisar.length === 0) return res.json(false)
+
+      // PARCHE PARA EL ID: Si viene como arreglo de Supabase, sacamos el objeto
+      if (Array.isArray(usuarioARevisar)) {
+          usuarioARevisar = usuarioARevisar[0]
       }
 
       res.json(usuarioARevisar)
-      
+
     } catch (error) {
-      // Si el token expiró o es falso, atrapamos el error aquí y no matamos al servidor
-      console.error("Error al verificar token de sesión:", error.message);
-      return res.status(401).json({ status: 'error', message: 'Token inválido o expirado' });
+      console.error("Error validando sesión:", error.message);
+      res.status(401).json(false);
     }
   }
 
