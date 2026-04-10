@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dcdd0fad-a94c-4810-8acc-5f108d3b18c3",
+    "Nombre_Usuario": "ARCYNTRAR",
+    "Nombre": "Angel",
+    "Apellido": "Contreras",
+    "Correo": "arcangel557.ac@gmail.com",
+    "Contrasena": "arcy12345",
+    "Fecha_Naciemiento": "2003-07-02",
+    "Genero": "H",
+    "NumTel": "5516918532",
+    "Contac_Emerg": "5516918532",
+    "Id_Ubicacion": 12345678910,
+    "Estado_cuenta": "Y",
+    "Fecha_Registro": "2003-07-05"
+  },
+  {
+    "id": "dcdd0fbc-a94c-4810-8acc-5f108d3b18c3",
+    "Nombre_Usuario": "Angel 2",
+    "Nombre": "Angel",
+    "Apellido": "Contreras",
+    "Correo": "ar.contreras@gmail.com",
+    "Contrasena": "arcybackends",
+    "Fecha_Naciemiento": "2003-10-15",
+    "Genero": "H",
+    "NumTel": "5587918532",
+    "Contac_Emerg": "5456918532",
+    "Id_Ubicacion": 12345678910,
+    "Estado_cuenta": "Y",
+    "Fecha_Registro": "2003-07-05"
+  }
+]

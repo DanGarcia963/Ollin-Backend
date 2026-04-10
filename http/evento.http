@@ -1,0 +1,2 @@
+### Obtener todos los lugares almacenados
+GET http://localhost:1234/api/evento/obtenerEventosConMuseos

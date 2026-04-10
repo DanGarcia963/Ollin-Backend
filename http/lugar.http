@@ -1,0 +1,23 @@
+### Obtener todos los lugares almacenados
+GET http://localhost:1234/api/lugar
+
+### Obtener lugar por ID
+GET http://localhost:1234/api/lugar/ChIJ11_XBkz50YURyQoZon1W4T8
+
+### Crear lugar de prueba 1: ESCOM
+POST http://localhost:1234/api/lugar/crearLugar
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJ11_XBkz50YURyQoZon1W4T8",
+    "Nombre": "ESCOM - Escuela Superior de Cómputo - IPN"
+}
+
+### Crear lugar de prueba 2: Cecyt13
+POST http://localhost:1234/api/lugar/crearLugar
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJwUqiTCf-0YURelo2pZAozTo",
+    "Nombre": "Centro de Estudios Científicos y Tecnológicos N° 13 'Ricardo Flores Magón' IPN"
+}

@@ -1,0 +1,16 @@
+### Loguear usuario
+POST http://localhost:1234/api/authenticator/login
+Content-Type: application/json
+
+{ 
+    "Correo": "saidsigala14@gmail.com",
+    "Contrasena": "12345"
+}
+
+### Recuperar contraseña
+POST http://localhost:1234/api/authenticator/olvidarContrasena
+Content-Type: application/json
+
+{ 
+    "Correo": "daespejelg@gmail.com"
+}

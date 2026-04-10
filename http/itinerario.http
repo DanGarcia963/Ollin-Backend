@@ -1,0 +1,45 @@
+### Obtener todos los lugares almacenados
+POST http://localhost:1234/api/itinerario/obtenerItinerarios
+Content-Type: application/json
+
+{   
+    "id_Turista": "1"
+}
+
+### Obtener lugar por ID
+GET http://localhost:1234/api/itinerario/1
+
+### Crear itinerario de prueba 1: Viaje por el IPN
+POST http://localhost:1234/api/itinerario/crearItinerario
+Content-Type: application/json
+
+{   
+    "id_Turista": "1",
+    "Nombre": "Viaje por el IPN"
+}
+
+### Crear itinerario de prueba 2: Viaje por la UNAM
+POST http://localhost:1234/api/itinerario/crearItinerario
+Content-Type: application/json
+
+{   
+    "id_Turista": "1",
+    "Nombre": "Viaje por la UNAM"
+}
+
+### Eliminar Itinerario
+POST http://localhost:1234/api/itinerario/eliminarItinerario
+Content-Type: application/json
+
+{   
+    "id_Itinerario": "1"
+}
+
+### Editar Estado Itinerario
+POST https://localhost:1234/api/itinerario/editarEstadoItinerario
+Content-Type: application/json
+
+{   
+    "id_Itinerario": 3,
+    "Estado": "C"
+}

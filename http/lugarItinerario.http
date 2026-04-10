@@ -1,0 +1,50 @@
+### Obtener todos los lugares almacenados
+POST http://localhost:1234/api/lugarItinerario/obtenerLugaresItinerario
+Content-Type: application/json
+
+{   
+    "id_Itinerario": "4"
+}
+
+### Obtener lugar por ID
+GET http://localhost:1234/api/lugarItinerario/1
+
+### Crear lugar itinerario de prueba 1: CECyT
+POST http://localhost:1234/api/lugarItinerario/crearLugarItinerario
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJwUqiTCf-0YURelo2pZAozTo",
+    "Nombre": "Centro de Estudios Científicos y Tecnológicos N° 13 'Ricardo Flores Magón' IPN",
+    "id_Itinerario": "4",
+    "MetodoTransporte": "DRIVING"
+}
+
+### Crear lugar de prueba 2: ESCOM
+POST http://localhost:1234/api/lugarItinerario/crearLugarItinerario
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJ11_XBkz50YURyQoZon1W4T8",
+    "Nombre": "ESCOM - Escuela Superior de Cómputo - IPN",
+    "id_Itinerario": "4",
+    "MetodoTransporte": "DRIVING"
+}
+
+### Eliminar Itinerario
+POST http://localhost:1234/api/lugarItinerario/eliminarLugarItinerario
+Content-Type: application/json
+
+{   
+    "id_Lugar_Itinerario": "5"
+}
+
+### Editar Itinerario
+POST http://localhost:1234/api/lugarItinerario/editarLugarItinerario
+Content-Type: application/json
+
+{   
+    "id_Lugar_Itinerario": 4,
+    "MetodoTransporte": "Bicicling",
+    "Posicion": 0
+}

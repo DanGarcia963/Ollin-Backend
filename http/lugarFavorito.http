@@ -1,0 +1,50 @@
+### Obtener todos los lugares favoritos de un usuario
+POST http://localhost:1234/api/lugarFavorito/obtenerLugaresFavoritos
+Content-Type: application/json
+
+{   
+    "idTurista": "1"
+}
+
+### Obtener lugarFavorito por ID
+GET http://localhost:1234/api/lugarFavorito/6
+
+### Obtener lugarFavorito por ID del lugar
+POST http://localhost:1234/api/lugarFavorito/obtenerLugarFavoritoIdlugar
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJ11_XBkz50YURyQoZon1W4T8",
+    "id_Turista": "1"
+}
+
+
+### Crear lugar de prueba 1: ESCOM
+POST http://localhost:1234/api/lugarFavorito/crearLugarFavorito
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJ11_XBkz50YURyQoZon1W4T8",
+    "Nombre": "ESCOM - Escuela Superior de Cómputo - IPN",
+    "id_Turista": "5"
+}
+
+### Crear lugar de prueba 2: Cecyt13
+POST http://localhost:1234/api/lugarFavorito/crearLugarFavorito
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJwUqiTCf-0YURelo2pZAozTo",
+    "Nombre": "Centro de Estudios Científicos y Tecnológicos N° 13 'Ricardo Flores Magón' IPN",
+    "id_Turista": "1"
+}
+
+
+### Eliminar lugar favorito
+POST http://localhost:1234/api/lugarFavorito/eliminarLugarFavorito
+Content-Type: application/json
+
+{   
+    "id_Lugar": "ChIJ11_XBkz50YURyQoZon1W4T8",
+    "id_Turista": "1"
+}
