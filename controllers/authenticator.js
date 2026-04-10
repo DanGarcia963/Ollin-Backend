@@ -65,7 +65,7 @@ export class AuthenticatorController {
     res.send({ 
       status: 201, 
       message: `Usuario ${usuarioLogueado.Nombre} logueado`, 
-      //redirect: `${FRONTEND_URL}/inicio`,
+      redirect: `${FRONTEND_URL}/inicio`,
       token: token // Enviamos la llave maestra al frontend
     })
   }
