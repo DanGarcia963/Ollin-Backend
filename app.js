@@ -14,11 +14,12 @@ import { LugarRouter } from './routes/museo.js'
 import { LugarFavoritoRouter } from './routes/museoFavorito.js'
 import { ItinerarioRouter } from './routes/plan.js'
 import { LugarItinerarioRouter } from './routes/museoPlan.js'
-import {LugarVisitadoRouter} from './routes/museoVisitado.js'
+import { LugarVisitadoRouter } from './routes/museoVisitado.js'
 import { DelateRouter } from './routes/deleteUsuarioRoute.js'
 import { UpdateUsuarioRouter } from './routes/UpdateUsuarioRoute.js'
 import { QuejaRouter } from './routes/queja.js'
-import {EventoRouter} from './routes/evento.js'
+import { EventoRouter } from './routes/evento.js'
+
 // Imports para __dirname
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -27,11 +28,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const crearApp = (Modelos) => {
   const app = express()
   app.use(json())
-  app.use(cors())
-  app.use(cookieParser())
+  
+  // 1. ESCUDO CORS (Permite a Netlify comunicarse y enviar las cookies de sesión)
+  app.use(cors({
+    origin: [
+      'http://localhost:5500', // Para pruebas locales con Live Server
+      'http://127.0.0.1:5500',
+      'https://ollin-escom.netlify.app' // ¡RECUERDA CAMBIAR ESTO POR TU URL DE NETLIFY!
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+  }))
 
+  app.use(cookieParser())
   app.disable('x-powered-by')
 
+  // ==========================================
+  // RUTAS DE LA API (El Cerebro)
+  // ==========================================
   app.use('/api/authenticator', AuthenticatorRouter(Modelos))
   app.use('/api/authenticatorAdmin', AuthenticatorAdminRouter(Modelos))
   app.use('/api/usuarioTurista', UsuarioTuristaRouter(Modelos))
@@ -43,58 +57,25 @@ export const crearApp = (Modelos) => {
   app.use('/api/lugarVisitado', LugarVisitadoRouter(Modelos))
   app.use('/api/queja', QuejaRouter(Modelos))
   app.use('/api/evento', EventoRouter(Modelos))
-
   app.use('/api/deleteUsuario', DelateRouter(Modelos))
   app.use('/api/updateUsuario', UpdateUsuarioRouter(Modelos))
 
-  // Rutas del sitio web estático
-  app.use(express.static(__dirname + '/public'))
-  // Rutas para las páginas HTML
-  app.use('/images', express.static('public/images'));
-  // Pruebas de backend
-
+  // Endpoint para que el Frontend obtenga la API Key de Maps
   app.get('/config', (req, res) => {
     res.json({
       googleMapsApiKey: process.env.GMAPS_API_KEY
     });
   });
 
-  app.get('/recuperarContrasena', soloPublico, (req, res) => res.sendFile(__dirname + '/pages/cambiar_contraseña.html'))
-  app.get('/', soloPublico, (req, res) => res.sendFile(__dirname + '/pages/login_ES.html'))
-  app.get('/registrar', soloPublico, (req, res) => res.sendFile(__dirname + '/pages/registro_turista_ES.html'))
-  app.get('/recuperacion', soloPublico, (req, res) => res.sendFile(__dirname + '/pages/recuperacion_de_cuenta_ES.html'))
-  app.get('/inicio', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/inicio.html'))
-  app.get('/experience', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/Experience.html'))
-  app.get('/museums', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/Museums.html'))
-  app.get('/singleRoute', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/SingleRoute.html'))
-  app.get('/MisFavoritos', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/MisFavoritos.html'))
-  app.get('/MisVisitados', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/MisVisitados.html'))
-  app.get('/cuenta_verificada', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/Cuenta_verificada.html'))
-  app.get('/perfilTurista', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/perfilTurista.html'))
-  app.get('/cuenta_creada', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/cuenta_creada.html'))
-  app.get('/aventuras_proximas', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/Aventuras_proximas.html'))
-  app.get('/aventuras_pasadas', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/aventuras_pasadas.html'))
-  app.get('/despedida', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/despedida.html'))
-
-  app.get('/LogInAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/login_Admin.html'))
-  app.get('/registroAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/registro_Admin.html'))
-  app.get('/inicioAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/inicioAdmin.html'))
-  app.get('/museosAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/MuseumsAdmin.html'))
-  app.get('/gestionUsers', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/gestionUsers.html'))
-  app.get('/recuperarContrasenaAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/recuperacion_de_cuenta_Admin.html'))
-  app.get('/recuperacionContrasenaAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/cambiar_contraseña_Admin.html'))
-  app.get('/cuentaAdmin', soloPublico, (req, res) => res.sendFile(__dirname + '/pagesAdmin/perfilAdministrador.html'))
-
-  app.get('/cuentas', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/cuentas.html'))
-  app.get('/crear_usuario', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/crearUsuario.html'))
-  app.get('/crear_empresa', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/crearEmpresa.html'))
-  app.get('/actualizar', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/updateAdministrador.html'))
-  app.get('/editar_aventura', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/editarAventura.html'))
-  app.get('/EnCurso', soloAdmin, (req, res) => res.sendFile(__dirname + '/pages/AventuraEnCurso.html'))
-
+  // ==========================================
+  // SCRIPT DE PYTHON (Adaptado para la nube Linux)
+  // ==========================================
   app.post("/ejecutarScript", (req, res) => {
-    // Aquí puedes ejecutar tu script de Python
-    exec("C:/Users/ae_es/AppData/Local/Python/pythoncore-3.14-64/python.exe c:/Users/ae_es/Ollin/helpers/webScrapingPlaceID.py", (error, stdout, stderr) => {
+    // Construye la ruta dinámicamente sin importar en qué computadora esté
+    const scriptPath = path.join(__dirname, 'helpers', 'webScrapingPlaceID.py');
+    
+    // Usamos 'python3' que es el estándar en servidores Linux
+    exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error al ejecutar el script: ${error.message}`);
         return res.status(500).send("Error al ejecutar el script");
@@ -108,9 +89,12 @@ export const crearApp = (Modelos) => {
     });
   });
   
+  // ==========================================
+  // INICIO DEL SERVIDOR
+  // ==========================================
   const PORT = process.env.PORT ?? 1234
 
   app.listen(PORT, () => {
-    console.log(`server listening on port http://localhost:${PORT}`)
+    console.log(`API de Ollin escuchando en el puerto ${PORT}`)
   })
 }
