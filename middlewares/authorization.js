@@ -4,14 +4,13 @@ import { UsuarioTuristaModel } from '../models/MySQL/usuarioTurista.js'
 import { UsuarioAdminModel } from '../models/MySQL/usuarioAdmin.js'
 
 dotenv.config()
-// La URL de tu Netlify (Asegúrate de ponerla en las variables de Railway)
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
 
 export const soloAdmin = async (req, res, next) => {
   const logueado = await validarCookie(req)
   if (logueado) return next()
 
-  return res.redirect(`${FRONTEND_URL}/login_ES.html`)
+  return res.redirect('/')
 }
 
 export const soloPublico = async (req, res, next) => {
@@ -19,13 +18,13 @@ export const soloPublico = async (req, res, next) => {
 
   if (!logueado) return next()
 
-  return res.redirect(`${FRONTEND_URL}/inicio.html`)
+  return res.redirect('/inicio')
 }
 
 export const soloAdministrador = async (req, res, next) => {
   const logueado = await validarCookieAdmin(req)
   if (logueado) return next()
-  return res.redirect(`${FRONTEND_URL}/LogInAdmin.html`)
+  return res.redirect(`${FRONTEND_URL}/LogInAdmin`)
 }
 
 const validarCookie = async (req) => {
