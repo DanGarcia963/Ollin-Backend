@@ -34,7 +34,7 @@ export const crearApp = (Modelos) => {
     origin: [
       'http://localhost:5500', // Para pruebas locales con Live Server
       'http://127.0.0.1:5500',
-      'https://https://ollin-tt.netlify.app/' // ¡RECUERDA CAMBIAR ESTO POR TU URL DE NETLIFY!
+      'https://ollin-tt.netlify.app' // ¡RECUERDA CAMBIAR ESTO POR TU URL DE NETLIFY!
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
