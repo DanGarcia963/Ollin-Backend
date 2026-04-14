@@ -6,7 +6,7 @@ import jsonwebtoken from 'jsonwebtoken'
 
 dotenv.config()
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-escom.netlify.app'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-tt.netlify.app'
 
 export class AuthenticatorController {
   constructor (Modelos) {

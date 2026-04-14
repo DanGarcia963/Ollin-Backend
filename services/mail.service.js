@@ -116,7 +116,7 @@ const crearMailVerificacion = (token) => {
     <div class="container">
       <h1>Ollin</h1>
       <p>Gracias por registrarte. Para verificar tu cuenta, haz clic en el siguiente botón:</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Verificar Cuenta</a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Verificar Cuenta</a>
     </div>
   </body>
   </html>`
@@ -207,7 +207,7 @@ const crearMailOlvidarContrasena = (token) => {
     <div class="container">
       <h1>Ollin</h1>
       <p>Para crear una nueva contraseña, haz clic en el siguiente botón:</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticator/recuperarContrasena/${token}" class="button"><b>Recuperar contraseña</b></a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticator/recuperarContrasena/${token}" class="button"><b>Recuperar contraseña</b></a>
     </div>
   </body>
   </html>`
@@ -326,7 +326,7 @@ return `<!DOCTYPE html>
     <div class="container">
       <h1>Ollin - Administrador</h1>
       <p>Gracias por registrarte. Para verificar tu cuenta, haz clic en el siguiente botón:</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticatorAdmin/verificarCuenta/${token}" class="button">Verificar Cuenta</a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticatorAdmin/verificarCuenta/${token}" class="button">Verificar Cuenta</a>
     </div>
   </body>
   </html>`
@@ -417,7 +417,7 @@ const crearMailOlvidarContrasenaAdmin = (token) => {
     <div class="container">
       <h1>Ollin - Administrador</h1>
       <p>Para crear una nueva contraseña, haz clic en el siguiente botón:</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticatorAdmin/recuperarContrasena/${token}" class="button"><b>Recuperar contraseña</b></a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticatorAdmin/recuperarContrasena/${token}" class="button"><b>Recuperar contraseña</b></a>
     </div>
   </body>
   </html>`
@@ -499,7 +499,7 @@ const crearMailCambioEstadoMuseo = (museo, nombre, token) => {
       <p>Hola, ${nombre}.</p>
       <p>El estado de ${museo.Nombre} ha cambiado y se encuentra cerrado por quejas recientes.</p>
       <p>Te recomendamos revisar el museo para más detalles.</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Ir a ver</a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Ir a ver</a>
     </div>
   </body>
   </html>`
@@ -580,7 +580,7 @@ const crearMailCambioEstadoMuseoPlan = (museo, nombre, nombrePlan, token) => {
       <p>Hola, ${nombre}.</p>
       <p>El estado de ${museo.Nombre} ha cambiado y se encuentra cerrado por quejas recientes.</p>
       <p>Este museo se encuentra agregado en tu plan de visita ${nombrePlan}.</p>
-      <a href="http://ollin-backend-production.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Ir a ver</a>
+      <a href="http://ollin-backend-production-d68e.up.railway.app/api/authenticator/verificarCuenta/${token}" class="button">Ir a ver</a>
     </div>
   </body>
   </html>`
