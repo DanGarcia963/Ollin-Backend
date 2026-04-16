@@ -78,7 +78,7 @@ static async obtenerItinerariosFinalizados (idTurista) {
 
     try {
       const resCheck = await fetch(
-        `${SUPABASE_URL}/rest/v1/plan_visita?id_Turista=eq.${idTurista}&Nombre=eq.${encodeURIComponent(Nombre)}&select=id_Plan`,
+        `${SUPABASE_URL}/rest/v1/plan_visita?id_Turista=eq.${idTurista}&Nombre=eq.${Nombre}&select=id_Plan`,
         { headers }
       )
 

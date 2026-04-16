@@ -27,7 +27,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export const crearApp = (Modelos) => {
   const app = express()
-  app.use(json())
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   
   // 1. ESCUDO CORS (Permite a Netlify comunicarse y enviar las cookies de sesión)
   app.use(cors({
