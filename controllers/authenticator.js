@@ -121,26 +121,34 @@ export class AuthenticatorController {
     }
   }
 
-  establecerNuevaContrasena = async (req, res) => {
-    try {
-      if (!req.body.Token) return res.send({ status: 400, message: 'Falta Token', redirect: `${FRONTEND_URL}/` })
-
-      const tokenDecodificado = jsonwebtoken.verify(req.body.Token, process.env.JWT_SECRET)
-
-      if (!tokenDecodificado || !tokenDecodificado.Correo) return res.send({ status: 'error', message: 'Error en el token', redirect: `${FRONTEND_URL}/` })
-
-      const valores = {
-        Correo: tokenDecodificado.Correo,
-        Contrasena: req.body.Contrasena
-      }
-
-      await this.authenticatorModel.establecerNuevaContrasena({ entrada: valores })
-
-      res.send({ status: 201, message: 'Se cambió correctamente la contraseña', redirect: `${FRONTEND_URL}/` })
-    } catch (error) {
-      return res.send({ status: 401, message: 'Usuario Incorrecto', redirect: `${FRONTEND_URL}/` })
+establecerNuevaContrasena = async (req, res) => {
+  try {
+    if (!req.body.Token) {
+      return res.status(400).json({ message: 'Falta Token', redirect: `${FRONTEND_URL}/` });
     }
+
+    const tokenDecodificado = jsonwebtoken.verify(req.body.Token, process.env.JWT_SECRET);
+
+    if (!tokenDecodificado || !tokenDecodificado.Correo) {
+      return res.status(401).json({ message: 'Error en el token', redirect: `${FRONTEND_URL}/` });
+    }
+
+    const valores = {
+      Correo: tokenDecodificado.Correo,
+      Contrasena: req.body.Contrasena
+    };
+
+    const resultado = await this.authenticatorModel.establecerNuevaContrasena({ entrada: valores });
+
+    if (typeof resultado === 'string') {
+      return res.status(404).json({ message: resultado, redirect: `${FRONTEND_URL}/` });
+    }
+
+    return res.status(201).json({ message: 'Se cambió correctamente la contraseña', redirect: `${FRONTEND_URL}/` });
+  } catch (error) {
+    return res.status(401).json({ message: 'Usuario Incorrecto', redirect: `${FRONTEND_URL}/` });
   }
+}
 
   obtenerUsuarioLogueado = async (req, res) => {
     try {

@@ -135,14 +135,19 @@ if(!loginCorrecto) return 'Contraseña incorrecta'
       const salt = await bcryptjs.genSalt(10)
       const hashContrasena = await bcryptjs.hash(Contrasena, salt)
 
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${encodeURIComponent(Correo)}`,
-        {
-          method: "PATCH",
-          headers,
-          body: JSON.stringify({ Contrasena: hashContrasena })
-        }
-      )
+const response = await fetch(
+  `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${encodeURIComponent(Correo)}`,
+  {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ Contrasena: hashContrasena })
+  }
+);
+
+if (!response.ok) {
+  const errorText = await response.text();
+  throw new Error(`Error al actualizar la contraseña: ${errorText}`);
+}
 
       const usuarioTuristaModificado = await usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(Correo)
 
