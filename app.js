@@ -15,7 +15,7 @@ import { LugarFavoritoRouter } from './routes/museoFavorito.js'
 import { ItinerarioRouter } from './routes/plan.js'
 import { LugarItinerarioRouter } from './routes/museoPlan.js'
 import { LugarVisitadoRouter } from './routes/museoVisitado.js'
-import { DelateRouter } from './routes/deleteUsuarioRoute.js'
+import { DeleteRouter } from './routes/deleteUsuarioRoute.js'
 import { UpdateUsuarioRouter } from './routes/UpdateUsuarioRoute.js'
 import { QuejaRouter } from './routes/queja.js'
 import { EventoRouter } from './routes/evento.js'
@@ -59,7 +59,7 @@ export const crearApp = (Modelos) => {
   app.use('/api/lugarVisitado', LugarVisitadoRouter(Modelos))
   app.use('/api/queja', QuejaRouter(Modelos))
   app.use('/api/evento', EventoRouter(Modelos))
-  app.use('/api/deleteUsuario', DelateRouter(Modelos))
+  app.use('/api/deleteUsuario', DeleteRouter(Modelos))
   app.use('/api/updateUsuario', UpdateUsuarioRouter(Modelos))
 
   // Endpoint para que el Frontend obtenga la API Key de Maps
