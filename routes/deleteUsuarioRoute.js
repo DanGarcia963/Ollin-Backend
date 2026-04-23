@@ -2,10 +2,10 @@ import { Router } from 'express'
 import { DeleteUsuarioController } from '../controllers/deleteUsuarioController.js'
 
 export const DeleteRouter = (Modelos) => {
-  const DeleteUsuarioModel = Router()
+  const DeleteUsuarioRouter = Router()
   const deleteUsuarioController = new DeleteUsuarioController(Modelos)
 
-  DeleteUsuarioModel.post('/', deleteUsuarioController.borrarPorEmail)
+  DeleteUsuarioRouter.post('/eliminarUsuario', deleteUsuarioController.borrarPorEmail)
 
-  return DeleteUsuarioModel
+  return DeleteUsuarioRouter
 }
