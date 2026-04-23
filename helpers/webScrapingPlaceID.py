@@ -91,7 +91,7 @@ def insertar_museo(data):
 # ==============================
 # GOOGLE MAPS
 # ==============================
-GOOGLE_API_KEY = 'AIzaSyDooG38M5nHQ27rkwNWU5X-lX-rDjJFQCw'
+GOOGLE_API_KEY = 'AIzaSyAsOqTQSOWBmyMoqlSaj71fo2pNgL8del8'
 
 # ==============================
 # GOOGLE TRANSLATE
