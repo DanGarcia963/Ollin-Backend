@@ -44,7 +44,7 @@ export class AuthenticatorController {
     res.send({
       status: 201,
       message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
-      redirect: '/cuenta_creada'
+      redirect: '/'
     })
   }
 

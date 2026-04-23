@@ -11,13 +11,21 @@ const headers = {
 export class DeleteUsuarioModel {
   static async borrarPorEmail(id) {
     try {
-      await fetch(
+      const response = await fetch(
         `${SUPABASE_URL}/rest/v1/usuario_turista?id=eq.${id}`,
         {
           method: "DELETE",
           headers
         }
       );
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+      }
+
+      const result = await response.json();
+      return result;
     } catch (error) {
       throw new Error('Error al borrar el usuario: ' + error.message);
     }
