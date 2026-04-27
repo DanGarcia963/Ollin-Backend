@@ -161,7 +161,7 @@ export class AuthenticatorAdminController {
 
     const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET)
 
-    const usuarioARevisar = await this.usuarioAdminModel.obtenerUsuarioAdminPorCorreo(decodificada.Correo)
+    let usuarioARevisar = await this.usuarioAdminModel.obtenerUsuarioAdminPorCorreo(decodificada.Correo)
 
     if (usuarioARevisar.length === 0 || !usuarioARevisar) return res.json(false)
 

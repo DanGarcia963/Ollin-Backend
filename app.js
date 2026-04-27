@@ -90,6 +90,22 @@ export const crearApp = (Modelos) => {
       res.send("Script ejecutado correctamente");
     });
   });
+
+  app.post("/ejecutarScriptNightMuseums", (req, res) => {
+    const scriptPath = path.join(__dirname, 'helpers', 'NightMuseums.py');
+    exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error al ejecutar el script: ${error.message}`);
+        return res.status(500).send("Error al ejecutar el script");
+      }
+      if (stderr) {
+        console.error(`Error en el script: ${stderr}`);
+        return res.status(500).send("Error en el script");
+      }
+      console.log(`Resultado del script: ${stdout}`);
+      res.send("Script ejecutado correctamente");
+    });
+  });
   
   // ==========================================
   // INICIO DEL SERVIDOR
