@@ -80,7 +80,7 @@ export class AuthenticatorController {
 
       await this.authenticatorModel.verificarCuenta(tokenDecodificado.Correo)
 
-      res.redirect(`${FRONTEND_URL}/Cuenta_verificada.html`)
+      res.redirect(`${FRONTEND_URL}/`)
     } catch (error) {
       res.redirect(`${FRONTEND_URL}/`)
     }

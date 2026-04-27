@@ -128,7 +128,12 @@ export class AuthenticatorAdminModel {
           headers,
           body: JSON.stringify({ Contrasena: hashContrasena })
         }
-      )
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
 
       const usuarioAdminModificado = await usuarioAdminModel.obtenerUsuarioAdminPorCorreo(Correo)
 
