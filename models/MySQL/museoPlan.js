@@ -10,60 +10,70 @@ const headers = {
 
 export class MuseoPlanModel {
 
-  static async obtenerLugaresPorItinerario (idPlan) {
-const res = await fetch(
-  `${SUPABASE_URL}/rest/v1/plan_museo?id_Plan=eq.${idPlan}&select=id_Plan_Museo,Posicion,MetodoTransporte,Estado,museo(id_Museo,Informacion_JSON),plan_visita(id_Plan,Nombre,fecha_Creacion)&order=Posicion.desc`,
-  { headers }
-)
+static async obtenerLugaresPorItinerario(idPlan) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/plan_museo?id_Plan=eq.${idPlan}&select=id_Plan_Museo,Posicion,MetodoTransporte,Estado,museo(id_Museo,Nombre,Latitud,Longitud,Informacion_JSON),plan_visita(id_Plan,Nombre,fecha_Creacion)&order=Posicion.desc`,
+    { headers }
+  );
 
-    const data = await res.json()
+  const data = await res.json();
 
-    if (!res.ok) {
-      console.error("❌ Error Supabase:", data)
-      return []
-    }
-
-    if (!Array.isArray(data)) {
-      console.error("❌ No es arreglo:", data)
-      return []
-    }
-
-    const resultado = data.map(item => {
-      const info = item.museo?.Informacion_JSON || {}
-
-      const getHorario = (dia, tipo) =>
-        info?.HorariosByDay?.[dia]?.[0]?.[tipo] || null
-
-      return {
-        ID: item.id_Plan_Museo,
-        "ID Plan": item.plan_visita?.id_Plan,
-        Plan: item.plan_visita?.Nombre,
-        "Estado Museo": item.Estado,
-        fechaCreacion: item.plan_visita?.fecha_Creacion,
-        "ID MUSEO": item.museo?.id_Museo,
-        "Posición en itinerario": item.Posicion,
-        "Metodo de transporte": item.MetodoTransporte,
-
-        HoraApertura_Lunes: getHorario("Lunes", "HorarioIn"),
-        HoraCierre_Lunes: getHorario("Lunes", "HorarioOut"),
-        HoraApertura_Martes: getHorario("Martes", "HorarioIn"),
-        HoraCierre_Martes: getHorario("Martes", "HorarioOut"),
-        HoraApertura_Miércoles: getHorario("Miércoles", "HorarioIn"),
-        HoraCierre_Miércoles: getHorario("Miércoles", "HorarioOut"),
-        HoraApertura_Jueves: getHorario("Jueves", "HorarioIn"),
-        HoraCierre_Jueves: getHorario("Jueves", "HorarioOut"),
-        HoraApertura_Viernes: getHorario("Viernes", "HorarioIn"),
-        HoraCierre_Viernes: getHorario("Viernes", "HorarioOut"),
-        HoraApertura_Sábado: getHorario("Sábado", "HorarioIn"),
-        HoraCierre_Sábado: getHorario("Sábado", "HorarioOut"),
-        HoraApertura_Domingo: getHorario("Domingo", "HorarioIn"),
-        HoraCierre_Domingo: getHorario("Domingo", "HorarioOut")
-      }
-    })
-
-    console.log(resultado)
-    return resultado
+  if (!res.ok) {
+    console.error("❌ Error Supabase:", data);
+    return [];
   }
+
+  if (!Array.isArray(data)) {
+    console.error("❌ No es arreglo:", data);
+    return [];
+  }
+
+  const resultado = data.map(item => {
+    const info = item.museo?.Informacion_JSON || {};
+
+    const getHorario = (dia, tipo) =>
+      info?.HorariosByDay?.[dia]?.[0]?.[tipo] || null;
+
+    return {
+      ID: item.id_Plan_Museo,
+      "ID Plan": item.plan_visita?.id_Plan,
+      Plan: item.plan_visita?.Nombre,
+      "Estado Museo": item.Estado,
+      fechaCreacion: item.plan_visita?.fecha_Creacion,
+      "ID MUSEO": item.museo?.id_Museo,
+      NombreMuseo: item.museo?.Nombre,
+      "Posición en itinerario": item.Posicion,
+      "Metodo de transporte": item.MetodoTransporte,
+
+      Municipio: info?.Municipio ?? null,
+      Direccion: info?.Direccion ?? null,
+      Rating: info?.Rating ?? null,
+      Telefono: info?.Telefono ?? null,
+      Imagenes: info?.Imagenes ?? [],
+
+      Latitud: item.museo?.Latitud ?? null,
+      Longitud: item.museo?.Longitud ?? null,
+
+      HorarioIn_Lunes: getHorario("Lunes", "HorarioIn"),
+      HorarioOut_Lunes: getHorario("Lunes", "HorarioOut"),
+      HorarioIn_Martes: getHorario("Martes", "HorarioIn"),
+      HorarioOut_Martes: getHorario("Martes", "HorarioOut"),
+      HorarioIn_Miércoles: getHorario("Miércoles", "HorarioIn"),
+      HorarioOut_Miércoles: getHorario("Miércoles", "HorarioOut"),
+      HorarioIn_Jueves: getHorario("Jueves", "HorarioIn"),
+      HorarioOut_Jueves: getHorario("Jueves", "HorarioOut"),
+      HorarioIn_Viernes: getHorario("Viernes", "HorarioIn"),
+      HorarioOut_Viernes: getHorario("Viernes", "HorarioOut"),
+      HorarioIn_Sábado: getHorario("Sábado", "HorarioIn"),
+      HorarioOut_Sábado: getHorario("Sábado", "HorarioOut"),
+      HorarioIn_Domingo: getHorario("Domingo", "HorarioIn"),
+      HorarioOut_Domingo: getHorario("Domingo", "HorarioOut")
+    };
+  });
+
+  console.log(resultado);
+  return resultado;
+}
 
   static async obtenerLugarItinerarioPorIdMuseo ({ entrada }) {
     const { id_Museo: idMuseo, id_Plan: idPlan } = entrada

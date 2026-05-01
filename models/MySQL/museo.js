@@ -10,32 +10,35 @@ const headers = {
 
 export class MuseoModel {
 
-  static async obtenerTodosLosLugares () {
+  static async obtenerTodosLosLugares() {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/museo?Estado=eq.OP&select=*`,
       { headers }
-    )
+    );
 
-    const data = await res.json()
+    const data = await res.json();
 
     if (!Array.isArray(data)) {
-    console.error("❌ Error Supabase:", data)
-    return []
-  }
+      console.error("❌ Error Supabase:", data);
+      return [];
+    }
 
     return data.map(m => {
-      const info = m.Informacion_JSON || {}
+      const info = m.Informacion_JSON || {};
 
       const getHorario = (dia, tipo) =>
-        info?.HorariosByDay?.[dia]?.[0]?.[tipo] ?? null
+        info?.HorariosByDay?.[dia]?.[0]?.[tipo] ?? null;
 
       const getTraduccion = (lang, key) =>
-      info?.Traducciones?.[lang]?.Secciones?.[key] ?? null
+        info?.Traducciones?.[lang]?.Secciones?.[key] ?? null;
 
       return {
         "ID MUSEO": m.id_Museo,
         NombreMuseo: m.Nombre,
         Municipio: info?.Municipio ?? null,
+        Direccion: info?.Direccion ?? null,
+        Rating: info?.Rating ?? null,
+        Telefono: info?.Telefono ?? null,
 
         HorarioIn_Lunes: getHorario("Lunes", "HorarioIn"),
         HorarioOut_Lunes: getHorario("Lunes", "HorarioOut"),
@@ -72,9 +75,6 @@ export class MuseoModel {
         Servicios: info?.Secciones?.["Servicios"] ?? null,
         FechaFundacion: info?.Secciones?.["Fecha de fundación"] ?? null,
 
-              // ==============================
-      // TRADUCCIONES 🇺🇸 🇫🇷 🇮🇹
-      // ==============================
         DatosGenerales_en: getTraduccion("en", "Datos generales"),
         DatosGenerales_fr: getTraduccion("fr", "Datos generales"),
         DatosGenerales_it: getTraduccion("it", "Datos generales"),
@@ -95,31 +95,32 @@ export class MuseoModel {
         SalasExhibicionTemporales_fr: getTraduccion("fr", "Salas de exhibición temporales"),
         SalasExhibicionTemporales_it: getTraduccion("it", "Salas de exhibición temporales"),
 
+        Imagenes: info?.Imagenes ?? [],
 
         Latitud: m.Latitud,
         Longitud: m.Longitud
-      }
-    })
+      };
+    });
   }
 
-  static async obtenerLugarPorId (idMuseo) {
+  static async obtenerLugarPorId(idMuseo) {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/museo?id_Museo=eq.${idMuseo}&select=*`,
       { headers }
-    )
+    );
 
-    const data = await res.json()
+    const data = await res.json();
 
-    if (data.length === 0) return false
-    return data[0]
+    if (data.length === 0) return false;
+    return data[0];
   }
 
-  static async crearLugar ({ entrada }) {
-    const { id_Museo: idMuseo, Nombre } = entrada
+  static async crearLugar({ entrada }) {
+    const { id_Museo: idMuseo, Nombre } = entrada;
 
-    const existeMuseo = await this.obtenerLugarPorId(idMuseo)
+    const existeMuseo = await this.obtenerLugarPorId(idMuseo);
 
-    if (existeMuseo !== false) return 'Ya existe un lugar con ese id'
+    if (existeMuseo !== false) return 'Ya existe un lugar con ese id';
 
     try {
       await fetch(
@@ -136,12 +137,12 @@ export class MuseoModel {
             Nombre
           })
         }
-      )
+      );
 
-      return await this.obtenerLugarPorId(idMuseo)
+      return await this.obtenerLugarPorId(idMuseo);
 
     } catch (error) {
-      throw new Error(error)
+      throw new Error(error);
     }
   }
 }

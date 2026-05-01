@@ -40,10 +40,10 @@ static async obtenerMuseosConSinQuejas (){
       return {
         "ID MUSEO": m.id_Museo,
         NombreMuseo: m.Nombre,
-        tiene_quejas: quejas.length > 0,
-        total_quejas_ultimo_mes: quejas.length,
-        Tipo_Queja: quejas.map(q => q.Tipo_Queja),
         Municipio: info?.Municipio ?? null,
+        Direccion: info?.Direccion ?? null,
+        Rating: info?.Rating ?? null,
+        Telefono: info?.Telefono ?? null,
 
         HorarioIn_Lunes: getHorario("Lunes", "HorarioIn"),
         HorarioOut_Lunes: getHorario("Lunes", "HorarioOut"),
@@ -79,6 +79,28 @@ static async obtenerMuseosConSinQuejas (){
         SalasExhibicionTemporales: info?.Secciones?.["Salas de exhibición temporales"] ?? null,
         Servicios: info?.Secciones?.["Servicios"] ?? null,
         FechaFundacion: info?.Secciones?.["Fecha de fundación"] ?? null,
+
+        DatosGenerales_en: getTraduccion("en", "Datos generales"),
+        DatosGenerales_fr: getTraduccion("fr", "Datos generales"),
+        DatosGenerales_it: getTraduccion("it", "Datos generales"),
+
+        SalasExhibicion_en: getTraduccion("en", "Salas de exhibición"),
+        SalasExhibicion_fr: getTraduccion("fr", "Salas de exhibición"),
+        SalasExhibicion_it: getTraduccion("it", "Salas de exhibición"),
+
+        Servicios_en: getTraduccion("en", "Servicios"),
+        Servicios_fr: getTraduccion("fr", "Servicios"),
+        Servicios_it: getTraduccion("it", "Servicios"),
+
+        FechaFundacion_en: getTraduccion("en", "Fecha de fundación"),
+        FechaFundacion_fr: getTraduccion("fr", "Fecha de fundación"),
+        FechaFundacion_it: getTraduccion("it", "Fecha de fundación"),
+
+        SalasExhibicionTemporales_en: getTraduccion("en", "Salas de exhibición temporales"),
+        SalasExhibicionTemporales_fr: getTraduccion("fr", "Salas de exhibición temporales"),
+        SalasExhibicionTemporales_it: getTraduccion("it", "Salas de exhibición temporales"),
+
+        Imagenes: info?.Imagenes ?? [],
 
         Latitud: m.Latitud,
         Longitud: m.Longitud

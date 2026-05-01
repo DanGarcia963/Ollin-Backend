@@ -10,25 +10,51 @@ const headers = {
 
 export class MuseoFavoritoModel {
 
-  static async obtenerTodosLosLugaresFavoritos (idTurista) {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/museo_favorito?id_Turista=eq.${idTurista}&select=id_Museo_Favorito,museo(id_Museo,Nombre)`,
-      { headers }
-    )
+static async obtenerTodosLosLugaresFavoritos (idTurista) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/museo_favorito?id_Turista=eq.${idTurista}&select=
+      id_Museo_Favorito,
+      museo(
+        id_Museo,
+        Nombre,
+        Latitud,
+        Longitud,
+        Informacion_JSON
+      )`,
+    { headers }
+  )
 
-    const data = await res.json()
+  const data = await res.json()
 
-    if (!Array.isArray(data)) {
-      console.error("❌ Error Supabase:", data)
-      return []
-    }
+  if (!Array.isArray(data)) {
+    console.error("❌ Error Supabase:", data)
+    return []
+  }
 
-    return data.map(m => ({
+  return data.map(m => {
+    const info = m.museo?.Informacion_JSON || {}
+
+    return {
       id_Museo_Favorito: m.id_Museo_Favorito,
       "ID MUSEO": m.museo?.id_Museo,
-      NombreMuseo: m.museo?.Nombre
-    }))
-  }
+      NombreMuseo: m.museo?.Nombre,
+
+      // 🔥 nuevos datos (los que antes pedías a Maps)
+      Latitud: m.museo?.Latitud,
+      Longitud: m.museo?.Longitud,
+
+      Direccion: info.Direccion,
+      Rating: info.Rating,
+      Telefono: info.Telefono,
+      Imagenes: info.Imagenes,
+
+      Horarios: info.HorariosByDay,
+      Costos: info.CostosByLabel,
+
+      Informacion_JSON: info
+    }
+  })
+}
 
   static async obtenerLugarFavoritoPorId (idMuseoFavorito) {
     const res = await fetch(
