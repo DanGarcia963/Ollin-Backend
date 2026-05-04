@@ -15,38 +15,47 @@ export class AuthenticatorController {
   }
 
   registrarUsuarioTurista = async (req, res) => {
-    const resultado = validarUsuarioTurista(req.body)
+  const resultado = validarUsuarioTurista(req.body)
+  
+  if (!resultado.success) {
+    return res.status(400).json({ error: JSON.parse(resultado.error.message) })
+  }
+
+  const nuevoUsuarioTurista = await this.authenticatorModel.registrarUsuarioTurista({ entrada: resultado.data })
+
+  if (!nuevoUsuarioTurista || typeof nuevoUsuarioTurista === 'string') {
+    return res.send({ status: 401, message: nuevoUsuarioTurista || 'Error al crear usuario' })
+  }
+
+  console.log("👤 Usuario creado en BD:", nuevoUsuarioTurista)
+
+  const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioTurista.Correo)
+
+  const mail = await enviarEmailVerificacion(
+    nuevoUsuarioTurista.Correo,
+    nuevoUsuarioTurista.Nombre,
+    tokenVerificacion
+  )
+
+  // AQUÍ ESTÁ LA MAGIA: Si el correo falla, hacemos rollback
+  if (!mail || mail.response?.statusText === 'ERROR' || mail.response?.status !== 200) {
+    console.log("⚠️ Correo falló. Iniciando rollback para:", nuevoUsuarioTurista.Correo)
     
-    if (!resultado.success) {
-      return res.status(400).json({ error: JSON.parse(resultado.error.message) })
-    }
+    // Eliminamos al usuario de Supabase
+    await this.authenticatorModel.eliminarUsuarioTuristaPorCorreo(nuevoUsuarioTurista.Correo)
 
-    const nuevoUsuarioTurista = await this.authenticatorModel.registrarUsuarioTurista({ entrada: resultado.data })
-
-    if (!nuevoUsuarioTurista || typeof nuevoUsuarioTurista === 'string') {
-      return res.send({ status: 401, message: nuevoUsuarioTurista || 'Error al crear usuario' })
-    }
-
-    console.log("👤 Usuario creado:", nuevoUsuarioTurista)
-
-    const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioTurista.Correo)
-
-    const mail = await enviarEmailVerificacion(
-      nuevoUsuarioTurista.Correo,
-      nuevoUsuarioTurista.Nombre,
-      tokenVerificacion
-    )
-
-    if (!mail || mail.response.statusText !== 'OK') {
-      return res.send({ status: 500, message: 'Error enviando correo de verificación' })
-    }
-
-    res.send({
-      status: 201,
-      message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
-      redirect: '/'
+    return res.send({ 
+      status: 500, 
+      message: 'No pudimos enviar el correo de verificación. Revisa que tu dirección de email esté bien escrita e inténtalo de nuevo.' 
     })
   }
+
+  res.send({
+    status: 201,
+    message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
+    redirect: '/'
+  })
+}
 
   login = async (req, res) => {
     const usuarioLogueado = await this.authenticatorModel.login({ entrada: req.body })
@@ -70,17 +79,24 @@ export class AuthenticatorController {
     })
   }
 
-  verificarCuenta = async (req, res) => {
+verificarCuenta = async (req, res) => {
     try {
       if (!req.params.token) return res.redirect(`${FRONTEND_URL}/`)
 
       const tokenDecodificado = jsonwebtoken.verify(req.params.token, process.env.JWT_SECRET)
 
-      if (!tokenDecodificado || !tokenDecodificado.Correo) return res.send({ status: 'error', message: 'Error en el token', redirect: `${FRONTEND_URL}/` })
+      if (!tokenDecodificado || !tokenDecodificado.Correo) {
+        return res.send({ status: 'error', message: 'Error en el token', redirect: `${FRONTEND_URL}/` })
+      }
 
+      // 1. Cambiamos el estado de la cuenta a "Y"
       await this.authenticatorModel.verificarCuenta(tokenDecodificado.Correo)
 
-      res.redirect(`${FRONTEND_URL}/`)
+      // 2. (Opcional pero recomendado) Actualizamos su fecha de último login
+      await this.authenticatorModel.guardarUltimoLogin(tokenDecodificado.Correo)
+
+      // 3. ¡EL CAMBIO VITAL! Redirigimos a inicio pasando el token en la URL
+      res.redirect(`${FRONTEND_URL}/inicio?token=${req.params.token}`)
     } catch (error) {
       res.redirect(`${FRONTEND_URL}/`)
     }

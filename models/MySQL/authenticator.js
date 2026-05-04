@@ -64,6 +64,30 @@ export class AuthenticatorModel {
   }
 }
 
+static async eliminarUsuarioTuristaPorCorreo(correo) {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${correo}`,
+      {
+        method: "DELETE",
+        headers: {
+          ...headers // Usa los mismos headers que ya tienes configurados
+        }
+      }
+    )
+
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error("❌ Error Supabase al hacer rollback:", errorData)
+      // Aunque falle, solo lo registramos en consola para no romper el flujo del servidor
+    } else {
+      console.log(`🗑️ Rollback exitoso: Usuario ${correo} eliminado.`)
+    }
+  } catch (error) {
+    console.error("❌ Excepción al intentar eliminar usuario:", error.message)
+  }
+}
+
   static async login ({ entrada }) {
     const { Correo, Contrasena } = entrada
 
