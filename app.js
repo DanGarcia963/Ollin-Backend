@@ -69,41 +69,52 @@ export const crearApp = (Modelos) => {
     });
   });
 
-  // ==========================================
+// ==========================================
   // SCRIPT DE PYTHON (Adaptado para la nube Linux)
   // ==========================================
+  
+  // Configuramos el exec para procesos largos de scraping
+  const opcionesScript = {
+    maxBuffer: 1024 * 1024 * 50, // 50 MB de límite para la salida en consola
+    timeout: 0 // 0 = sin límite de tiempo para que no lo mate a la mitad
+  };
+
   app.post("/ejecutarScript", (req, res) => {
     // Construye la ruta dinámicamente sin importar en qué computadora esté
     const scriptPath = path.join(__dirname, 'helpers', 'webScrapingPlaceID.py');
     
     // Usamos 'python3' que es el estándar en servidores Linux
-    exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
+    exec(`python3 "${scriptPath}"`, opcionesScript, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error al ejecutar el script: ${error.message}`);
+        console.error(`Error crítico al ejecutar el script: ${error.message}`);
         return res.status(500).send("Error al ejecutar el script");
       }
+      
+      // Muchas librerías de Python usan stderr para warnings, no siempre es un error fatal.
       if (stderr) {
-        console.error(`Error en el script: ${stderr}`);
-        return res.status(500).send("Error en el script");
+        console.warn(`Advertencia/Log en el script (stderr): ${stderr}`);
       }
-      console.log(`Resultado del script: ${stdout}`);
-      res.send("Script ejecutado correctamente");
+      
+      console.log(`Resultado del script:\n${stdout}`);
+      res.send("Script webScrapingPlaceID ejecutado correctamente");
     });
   });
 
   app.post("/ejecutarScriptNightMuseums", (req, res) => {
     const scriptPath = path.join(__dirname, 'helpers', 'NightMuseums.py');
-    exec(`python3 "${scriptPath}"`, (error, stdout, stderr) => {
+    
+    exec(`python3 "${scriptPath}"`, opcionesScript, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Error al ejecutar el script: ${error.message}`);
+        console.error(`Error crítico al ejecutar el script: ${error.message}`);
         return res.status(500).send("Error al ejecutar el script");
       }
+      
       if (stderr) {
-        console.error(`Error en el script: ${stderr}`);
-        return res.status(500).send("Error en el script");
+        console.warn(`Advertencia/Log en el script (stderr): ${stderr}`);
       }
-      console.log(`Resultado del script: ${stdout}`);
-      res.send("Script ejecutado correctamente");
+      
+      console.log(`Resultado del script:\n${stdout}`);
+      res.send("Script NightMuseums ejecutado correctamente");
     });
   });
   
