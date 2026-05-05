@@ -1,5 +1,5 @@
 import express, { json } from 'express' // require -> commonJS
-import { exec } from "child_process";
+import { exec, spawn } from "child_process"; // Añade spawn aquí
 import cors from "cors";
 import 'dotenv/config'
 
@@ -72,49 +72,72 @@ export const crearApp = (Modelos) => {
 // ==========================================
   // SCRIPT DE PYTHON (Adaptado para la nube Linux)
   // ==========================================
-  
-  // Configuramos el exec para procesos largos de scraping
-  const opcionesScript = {
-    maxBuffer: 1024 * 1024 * 50, // 50 MB de límite para la salida en consola
-    timeout: 0 // 0 = sin límite de tiempo para que no lo mate a la mitad
-  };
 
+// ==========================================
+  // VARIABLES PARA GUARDAR LOS LOGS EN VIVO
+  // ==========================================
+  let logScrapingMuseos = "Presiona 'Actualizar' para iniciar el scraping...";
+  let logScrapingEventos = "Presiona 'Crear' para buscar eventos...";
+
+  // Endpoint para que el frontend lea los logs de Museos
+  app.get("/logs/museos", (req, res) => {
+    res.send(logScrapingMuseos);
+  });
+
+  // Endpoint para que el frontend lea los logs de Eventos
+  app.get("/logs/eventos", (req, res) => {
+    res.send(logScrapingEventos);
+  });
+
+  // ==========================================
+  // SCRIPTS DE PYTHON (Ejecución en Streaming)
+  // ==========================================
+  
   app.post("/ejecutarScript", (req, res) => {
-    // Construye la ruta dinámicamente sin importar en qué computadora esté
+    // 1. Respondemos rápido para no bloquear el frontend
+    res.send("Iniciado");
+    
+    // 2. Limpiamos el log anterior
+    logScrapingMuseos = "Iniciando actualización de museos...\n";
+
     const scriptPath = path.join(__dirname, 'helpers', 'webScrapingPlaceID.py');
     
-    // Usamos 'python3' que es el estándar en servidores Linux
-    exec(`python3 "${scriptPath}"`, opcionesScript, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error crítico al ejecutar el script: ${error.message}`);
-        return res.status(500).send("Error al ejecutar el script");
-      }
-      
-      // Muchas librerías de Python usan stderr para warnings, no siempre es un error fatal.
-      if (stderr) {
-        console.warn(`Advertencia/Log en el script (stderr): ${stderr}`);
-      }
-      
-      console.log(`Resultado del script:\n${stdout}`);
-      res.send("Script webScrapingPlaceID ejecutado correctamente");
+    // 3. Usamos spawn para leer datos en vivo
+    const pythonProcess = spawn('python3', [scriptPath]);
+
+    pythonProcess.stdout.on('data', (data) => {
+      logScrapingMuseos += data.toString();
+      // Recortamos el texto para no saturar la memoria de Railway si imprime demasiado
+      if(logScrapingMuseos.length > 10000) logScrapingMuseos = logScrapingMuseos.slice(-10000);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      logScrapingMuseos += `\n[ADVERTENCIA]: ${data.toString()}`;
+    });
+
+    pythonProcess.on('close', (code) => {
+      logScrapingMuseos += `\n✅ Proceso finalizado con código ${code}`;
     });
   });
 
   app.post("/ejecutarScriptNightMuseums", (req, res) => {
+    res.send("Iniciado");
+    logScrapingEventos = "Buscando eventos de Noche de Museos...\n";
+
     const scriptPath = path.join(__dirname, 'helpers', 'NightMuseums.py');
-    
-    exec(`python3 "${scriptPath}"`, opcionesScript, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error crítico al ejecutar el script: ${error.message}`);
-        return res.status(500).send("Error al ejecutar el script");
-      }
-      
-      if (stderr) {
-        console.warn(`Advertencia/Log en el script (stderr): ${stderr}`);
-      }
-      
-      console.log(`Resultado del script:\n${stdout}`);
-      res.send("Script NightMuseums ejecutado correctamente");
+    const pythonProcess = spawn('python3', [scriptPath]);
+
+    pythonProcess.stdout.on('data', (data) => {
+      logScrapingEventos += data.toString();
+      if(logScrapingEventos.length > 10000) logScrapingEventos = logScrapingEventos.slice(-10000);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      logScrapingEventos += `\n[ADVERTENCIA]: ${data.toString()}`;
+    });
+
+    pythonProcess.on('close', (code) => {
+      logScrapingEventos += `\n✅ Proceso finalizado con código ${code}`;
     });
   });
   
