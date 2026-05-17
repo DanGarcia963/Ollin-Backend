@@ -32,7 +32,10 @@ static async obtenerMuseosConSinQuejas (){
     .map(m => {
       const info = m.Informacion_JSON || {}
       const getHorario = (dia, tipo) =>
-        info?.HorariosByDay?.[dia]?.[0]?.[tipo] ?? null
+        info?.HorariosByDay?.[dia]?.[0]?.[tipo] ?? null;
+
+      const getTraduccion = (lang, key) =>
+        info?.Traducciones?.[lang]?.Secciones?.[key] ?? null;
       const quejas = (m.queja || []).filter(q => 
         new Date(q.fecha) >= fechaHaceUnMes
       )

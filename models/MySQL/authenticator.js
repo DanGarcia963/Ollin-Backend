@@ -108,7 +108,7 @@ const loginCorrecto = await bcryptjs.compare(
 
 if(!loginCorrecto) return 'Contraseña incorrecta'
 
-    if (usuarioTurista.Estado_Cuenta === 'N') return 'Para iniciar sesión debes verificar tu cuenta de correo'
+    if (usuarioTurista.Estado_Cuenta === 'N') return 'Para iniciar sesión debes verificar tu cuenta de correo, Revisa tu bandeja de entrada o spam y sigue las instrucciones que te enviamos para activar tu cuenta'
 
     return usuarioTurista
   }

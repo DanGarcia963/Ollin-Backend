@@ -2,14 +2,13 @@ const SUPABASE_URL = "https://fugjkxnxfsnnnhnshxzg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_NBQYqfAi42G2K-AsK0ZC5g_SPyEo46R";
 
 const headers = {
-  "apikey": SUPABASE_KEY,
-  "Authorization": `Bearer ${SUPABASE_KEY}`,
+  apikey: SUPABASE_KEY,
+  Authorization: `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
-  "Prefer": "return=representation"
+  Prefer: "return=representation"
 };
 
 export class MuseoModel {
-
   static async obtenerTodosLosLugares() {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/museo?Estado=eq.OP&select=*`,
@@ -120,29 +119,65 @@ export class MuseoModel {
 
     const existeMuseo = await this.obtenerLugarPorId(idMuseo);
 
-    if (existeMuseo !== false) return 'Ya existe un lugar con ese id';
+    if (existeMuseo !== false) return "Ya existe un lugar con ese id";
 
     try {
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/museo`,
-        {
-          method: "POST",
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-            "Prefer": "return=representation"
-          },
-          body: JSON.stringify({
-            id_Museo: idMuseo,
-            Nombre
-          })
-        }
-      );
+      await fetch(`${SUPABASE_URL}/rest/v1/museo`, {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Content-Type": "application/json",
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify({
+          id_Museo: idMuseo,
+          Nombre
+        })
+      });
 
       return await this.obtenerLugarPorId(idMuseo);
-
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  static async obtenerEstadoUsuarioPorMuseos({ id_Turista, ids_Museos }) {
+    const museosUnicos = [...new Set(ids_Museos.map(String))];
+
+    if (museosUnicos.length === 0) return [];
+
+    const idsQuery = museosUnicos.join(",");
+
+    const [favoritosRes, visitadosRes] = await Promise.all([
+      fetch(
+        `${SUPABASE_URL}/rest/v1/lugarFavorito?id_Turista=eq.${id_Turista}&id_Museo=in.(${idsQuery})&select=id_Museo`,
+        { headers }
+      ),
+      fetch(
+        `${SUPABASE_URL}/rest/v1/lugarVisitado?id_Turista=eq.${id_Turista}&id_Museo=in.(${idsQuery})&select=id_Museo`,
+        { headers }
+      )
+    ]);
+
+    const favoritosData = await favoritosRes.json();
+    const visitadosData = await visitadosRes.json();
+
+    const favoritosSet = new Set(
+      Array.isArray(favoritosData)
+        ? favoritosData.map(item => String(item.id_Museo))
+        : []
+    );
+
+    const visitadosSet = new Set(
+      Array.isArray(visitadosData)
+        ? visitadosData.map(item => String(item.id_Museo))
+        : []
+    );
+
+    return museosUnicos.map(id => ({
+      id_Museo: id,
+      favorite: favoritosSet.has(id),
+      visited: visitadosSet.has(id)
+    }));
   }
 }

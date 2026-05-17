@@ -8,6 +8,7 @@ export const LugarRouter = (Modelos) => {
   LugarRouter.get('/', museoController.obtenerTodosLosLugares)
   LugarRouter.get('/:id', museoController.obtenerLugarPorId)
   LugarRouter.post('/crearLugar', museoController.crearLugar)
+  LugarRouter.post('/estadoUsuarioPorMuseos', museoController.obtenerEstadoUsuarioPorMuseos)
 
   return LugarRouter
 }
