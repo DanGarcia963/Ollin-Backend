@@ -37,25 +37,16 @@ export class AuthenticatorController {
     tokenVerificacion
   )
 
-  // AQUÍ ESTÁ LA MAGIA: Si el correo falla, hacemos rollback
-  if (!mail || mail.response?.statusText === 'ERROR' || mail.response?.status !== 200) {
-    console.log("⚠️ Correo falló. Iniciando rollback para:", nuevoUsuarioTurista.Correo)
-    
-    // Eliminamos al usuario de Supabase
-    await this.authenticatorModel.eliminarUsuarioTuristaPorCorreo(nuevoUsuarioTurista.Correo)
-
-    return res.send({ 
-      status: 500, 
-      message: 'No pudimos enviar el correo de verificación. Revisa que tu dirección de email esté bien escrita e inténtalo de nuevo.' 
-    })
+  if (!mail || mail.response.statusText !== 'OK') {
+    return res.send({ status: 500, message: 'Error enviando correo de verificación' })
   }
 
-  res.send({
-    status: 201,
-    message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
-    redirect: '/'
-  })
-}
+    res.send({
+      status: 201,
+      message: `Usuario ${nuevoUsuarioTurista.Nombre} agregado`,
+      redirect: '/'
+    })
+  }
 
   login = async (req, res) => {
     const usuarioLogueado = await this.authenticatorModel.login({ entrada: req.body })
