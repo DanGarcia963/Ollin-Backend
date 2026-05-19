@@ -43,6 +43,9 @@ static async obtenerMuseosConSinQuejas (){
       return {
         "ID MUSEO": m.id_Museo,
         NombreMuseo: m.Nombre,
+        tiene_quejas: quejas.length > 0,
+        total_quejas_ultimo_mes: quejas.length,
+        Tipo_Queja: quejas.map(q => q.Tipo_Queja),
         Municipio: info?.Municipio ?? null,
         Direccion: info?.Direccion ?? null,
         Rating: info?.Rating ?? null,
