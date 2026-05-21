@@ -71,7 +71,6 @@ static async obtenerLugaresPorItinerario(idPlan) {
     };
   });
 
-  console.log(resultado);
   return resultado;
 }
 

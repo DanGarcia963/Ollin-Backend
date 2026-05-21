@@ -35,7 +35,6 @@ export class MuseoPlanController {
 
   crearLugarItinerario = async (req, res) => {
     const { id_Museo, Nombre, id_Plan, MetodoTransporte } = req.body
-    console.log(req.body)
     const existeLugarItinerario = await this.museoPlanModel.obtenerLugarItinerarioPorIdMuseo({ entrada: { id_Museo, id_Plan } })
    
    if(existeLugarItinerario)

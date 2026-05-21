@@ -147,6 +147,6 @@ export const crearApp = (Modelos) => {
   const PORT = process.env.PORT ?? 1234
 
   app.listen(PORT, () => {
-    console.log(`API de Ollin escuchando en el puerto ${PORT}`)
+    
   })
 }

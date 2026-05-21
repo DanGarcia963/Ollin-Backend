@@ -209,7 +209,6 @@ const resUsuarios = await fetch(
 )
 
 const usuarios = await resUsuarios.json()
-console.log("Usuarios registrados:", usuarios)
 // =========================
 // 👇 USUARIOS CON PLAN ACTIVO
 // =========================
@@ -220,15 +219,12 @@ const resUsuariosConPlan = await fetch(
 )
 
 const planes = await resUsuariosConPlan.json()
-console.log("Planes de visita activos:", planes)
 // Sacar IDs de usuarios que tienen ese museo
 const usuariosConMuseo = new Map()
 
 planes.forEach(plan => {
   plan.plan_museo?.forEach(mp => {
-     console.log(`Aventura ${plan.Nombre} tiene el museo en su plan de visita y ${mp.id_Museo} = ${idMuseo}`)
     if (mp.id_Museo === idMuseo) {
-      console.log(`Dentro aventura ${plan.Nombre} tiene el museo en su plan de visitay ${mp.id_Museo} = ${idMuseo}`)
       usuariosConMuseo.set(plan.id_Turista, plan.Nombre)
     }
   })

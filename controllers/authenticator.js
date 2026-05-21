@@ -27,8 +27,6 @@ export class AuthenticatorController {
     return res.send({ status: 401, message: nuevoUsuarioTurista || 'Error al crear usuario' })
   }
 
-  console.log("👤 Usuario creado en BD:", nuevoUsuarioTurista)
-
   const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioTurista.Correo)
 
   const mail = await enviarEmailVerificacion(

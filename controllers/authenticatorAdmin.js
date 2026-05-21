@@ -27,8 +27,6 @@ export class AuthenticatorAdminController {
       return res.send({status:401, message: nuevoUsuarioAdmin ||'Error al crear administrador'})
     }
 
-    console.log("Usuario creado:", nuevoUsuarioAdmin)
-
     const tokenVerificacion = generarTokenParaCorreo(nuevoUsuarioAdmin.Correo)
 
     const mail= await enviarEmailVerificacionAdmin(

@@ -23,8 +23,6 @@ export class MuseoVisitadoModel {
       return [];
     }
 
-    console.log("Respuesta visitados:", data);
-
     return data.map(m => {
       const info = m.museo?.Informacion_JSON || {};
 

@@ -11,16 +11,6 @@ export const enviarEmailVerificacion = async (direccion, nombre, token) => {
       apiKey: process.env.MAILJET_API_KEY,
       apiSecret: process.env.MAILJET_API_SECRET
     })
-    console.log('EMAIL A ENVIAR', {
-      from: {
-        email: process.env.MAILJET_SENDER,
-        name: process.env.MAILJET_SEND_NAME
-      },
-      to: {
-        email: direccion,
-        name: nombre
-      }
-    })
     const resultadoEmail = await mailjet.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
@@ -221,16 +211,7 @@ export const enviarEmailVerificacionAdmin = async (direccion, nombre, token) => 
       apiKey: process.env.MAILJET_API_KEY,
       apiSecret: process.env.MAILJET_API_SECRET
     })
-    console.log('EMAIL A ENVIAR', {
-      from: {
-        email: process.env.MAILJET_SENDER,
-        name: process.env.MAILJET_SEND_NAME
-      },
-      to: {
-        email: direccion,
-        name: nombre
-      }
-    })
+
     const resultadoEmail = await mailjet.post('send', { version: 'v3.1' }).request({
       Messages: [
         {

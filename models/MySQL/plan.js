@@ -18,8 +18,6 @@ static async obtenerItinerariosPorTurista (idTurista) {
 
   const data = await res.json()
 
-  console.log("🔍 DATA PLAN:", data)
-
   if (!Array.isArray(data)) {
     console.error("❌ Error Supabase:", data)
     return []
@@ -42,9 +40,6 @@ static async obtenerItinerariosFinalizados (idTurista) {
   )
 
   const data = await res.json()
-
-  // 🔍 Debug
-  console.log("Respuesta Supabase:", data)
 
   if (!Array.isArray(data)) {
     console.error("Error: data no es un array", data)

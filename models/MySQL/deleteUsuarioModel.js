@@ -20,7 +20,6 @@ static async borrarPorEmail(id) {
     );
 
     const text = await response.text();
-    console.log("Respuesta Supabase:", response.status, text);
 
     if (!response.ok) {
       throw new Error(`Supabase error: ${response.status} - ${text}`);
