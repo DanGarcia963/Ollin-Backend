@@ -93,32 +93,33 @@ export const crearApp = (Modelos) => {
   // SCRIPTS DE PYTHON (Ejecución en Streaming)
   // ==========================================
   
-  app.post("/ejecutarScript", (req, res) => {
-    // 1. Respondemos rápido para no bloquear el frontend
-    res.send("Iniciado");
-    
-    // 2. Limpiamos el log anterior
-    logScrapingMuseos = "Iniciando actualización de museos...\n";
+app.post("/ejecutarScript", (req, res) => {
+  res.send("Iniciado");
 
-    const scriptPath = path.join(__dirname, 'helpers', 'webScrapingPlaceID.py');
-    
-    // 3. Usamos spawn para leer datos en vivo
-    const pythonProcess = spawn('python3', [scriptPath]);
+  logScrapingMuseos = "Iniciando actualización de museos...\n";
+  const scriptPath = path.join(__dirname, "helpers", "webScrapingPlaceID.py");
 
-    pythonProcess.stdout.on('data', (data) => {
-      logScrapingMuseos += data.toString();
-      // Recortamos el texto para no saturar la memoria de Railway si imprime demasiado
-      if(logScrapingMuseos.length > 10000) logScrapingMuseos = logScrapingMuseos.slice(-10000);
-    });
+  const pythonProcess = spawn("python3", [scriptPath]);
 
-    pythonProcess.stderr.on('data', (data) => {
-      logScrapingMuseos += `\n[ADVERTENCIA]: ${data.toString()}`;
-    });
-
-    pythonProcess.on('close', (code) => {
-      logScrapingMuseos += `\n✅ Proceso finalizado con código ${code}`;
-    });
+  pythonProcess.stdout.on("data", (data) => {
+    logScrapingMuseos += data.toString();
+    if (logScrapingMuseos.length > 10000) {
+      logScrapingMuseos = logScrapingMuseos.slice(-10000);
+    }
   });
+
+  pythonProcess.stderr.on("data", (data) => {
+    logScrapingMuseos += `\n[STDERR]: ${data.toString()}`;
+  });
+
+  pythonProcess.on("error", (err) => {
+    logScrapingMuseos += `\n[ERROR spawn]: ${err.message}`;
+  });
+
+  pythonProcess.on("close", (code) => {
+    logScrapingMuseos += `\n✅ Proceso finalizado con código ${code}`;
+  });
+});
 
   app.post("/ejecutarScriptNightMuseums", (req, res) => {
     res.send("Iniciado");
