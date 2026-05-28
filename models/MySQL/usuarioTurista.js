@@ -12,29 +12,37 @@ const headers = {
 
 export class UsuarioTuristaModel {
 
-  static async obtenerTodosLosUsuarios () {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/usuario_turista?select=*`, {
-      headers
-    })
+  static async obtenerTodosLosUsuarios ({ nombre = '', estado = '' } = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/usuario_turista?select=*`
 
+    const params = []
+
+    if (nombre.trim() !== '') {
+      params.push(`Nombre=ilike.${encodeURIComponent(`%${nombre.trim()}%`)}`)
+    }
+
+    if (estado === 'Y' || estado === 'N') {
+      params.push(`Estado_Cuenta=eq.${estado}`)
+    }
+
+    if (params.length > 0) {
+      url += `&${params.join('&')}`
+    }
+
+    const res = await fetch(url, { headers })
     return await res.json()
   }
 
-static async obtenerUsuarioTuristaPorCorreo (Correo) {
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${encodeURIComponent(Correo)}`,
-    {
-      method: "GET",
-      headers
-    }
-  )
+  static async obtenerUsuarioTuristaPorCorreo (Correo) {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${encodeURIComponent(Correo)}`,
+      { method: "GET", headers }
+    )
 
-  const data = await response.json()
-
-  if (!data || data.length === 0) return false
-
-  return data[0]
-}
+    const data = await response.json()
+    if (!data || data.length === 0) return false
+    return data[0]
+  }
 
   static async obtenerUsuarioTuristaPorId (id) {
     const res = await fetch(
@@ -43,9 +51,30 @@ static async obtenerUsuarioTuristaPorCorreo (Correo) {
     )
 
     const data = await res.json()
-
     if (data.length === 0) return false
     return data[0]
+  }
+
+  static async validarCuenta ({ entrada }) {
+    const { id_Turista: idTurista } = entrada
+
+    const existeUsuario = await this.obtenerUsuarioTuristaPorId(idTurista)
+    if (!existeUsuario) return 'El usuario no existe'
+
+    try {
+      await fetch(
+        `${SUPABASE_URL}/rest/v1/usuario_turista?id=eq.${idTurista}`,
+        {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify({ Estado_Cuenta: 'Y' })
+        }
+      )
+
+      return await this.obtenerUsuarioTuristaPorId(idTurista)
+    } catch (error) {
+      return error
+    }
   }
 
   static async cambiarContraseña ({ entrada }) {
@@ -68,7 +97,6 @@ static async obtenerUsuarioTuristaPorCorreo (Correo) {
       )
 
       return await this.obtenerUsuarioTuristaPorId(idTurista)
-
     } catch (error) {
       return error
     }
@@ -91,7 +119,6 @@ static async obtenerUsuarioTuristaPorCorreo (Correo) {
       )
 
       return await this.obtenerUsuarioTuristaPorId(idTurista)
-
     } catch (error) {
       return error
     }
@@ -114,7 +141,6 @@ static async obtenerUsuarioTuristaPorCorreo (Correo) {
       )
 
       return await this.obtenerUsuarioTuristaPorId(idTurista)
-
     } catch (error) {
       return error
     }
@@ -137,7 +163,6 @@ static async obtenerUsuarioTuristaPorCorreo (Correo) {
       )
 
       return await this.obtenerUsuarioTuristaPorId(idTurista)
-
     } catch (error) {
       return error
     }

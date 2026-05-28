@@ -6,8 +6,10 @@ export const UsuarioTuristaRouter = (Modelos) => {
   const usuarioTuristaController = new UsuarioTuristaController(Modelos)
 
   UsuarioTuristaRouter.get('/', usuarioTuristaController.obtenerTodosLosUsuarios)
-  UsuarioTuristaRouter.get('/:Correo', usuarioTuristaController.obtenerUsuarioTuristaPorCorreo)
+  UsuarioTuristaRouter.post('/validarCuenta', usuarioTuristaController.validarCuenta)
   UsuarioTuristaRouter.get('/identificador/:id', usuarioTuristaController.obtenerUsuarioTuristaPorId)
+  UsuarioTuristaRouter.get('/:Correo', usuarioTuristaController.obtenerUsuarioTuristaPorCorreo)
+
   UsuarioTuristaRouter.post('/cambiarContrasena', usuarioTuristaController.cambiarContraseña)
   UsuarioTuristaRouter.post('/actualizarNom', usuarioTuristaController.actualizarNombre)
   UsuarioTuristaRouter.post('/actualizarApe', usuarioTuristaController.actualizarApellido)
