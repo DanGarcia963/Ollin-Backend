@@ -34,9 +34,9 @@ export const crearApp = (Modelos) => {
   // 1. ESCUDO CORS (Permite a Netlify comunicarse y enviar las cookies de sesión)
   app.use(cors({
     origin: [
-      'http://localhost:5500', // Para pruebas locales con Live Server
+      'http://localhost:5500',
       'http://127.0.0.1:5500',
-      'https://ollin-tt.netlify.app' // ¡RECUERDA CAMBIAR ESTO POR TU URL DE NETLIFY!
+      process.env.FRONTEND_URL || 'https://ollin-tu-camino.netlify.app'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -61,6 +61,9 @@ export const crearApp = (Modelos) => {
   app.use('/api/evento', EventoRouter(Modelos))
   app.use('/api/deleteUsuario', DeleteRouter(Modelos))
   app.use('/api/updateUsuario', UpdateUsuarioRouter(Modelos))
+
+  // Healthcheck sin dependencia de la base de datos.
+  app.get('/health', (req, res) => res.json({ status: 'ok', service: 'ollin-backend' }))
 
   // Endpoint para que el Frontend obtenga la API Key de Maps
   app.get('/config', (req, res) => {
