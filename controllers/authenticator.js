@@ -165,30 +165,31 @@ establecerNuevaContrasena = async (req, res) => {
 }
 
   obtenerUsuarioLogueado = async (req, res) => {
+    const token = req.body?.token
+    if (!token) return res.status(401).json(false)
+
+    let correo
     try {
-      // Recibe el token del body que le manda tu nuevo admin.js
-      const { token } = req.body;
-
-      if (!token) {
-        return res.status(401).json(false);
-      }
-
-      const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET)
-
-      let usuarioARevisar = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(decodificada.Correo)
-
-      if (!usuarioARevisar || usuarioARevisar.length === 0) return res.json(false)
-
-      // PARCHE PARA EL ID: Si viene como arreglo de Supabase, sacamos el objeto
-      if (Array.isArray(usuarioARevisar)) {
-          usuarioARevisar = usuarioARevisar[0]
-      }
-
-      res.json(usuarioARevisar)
-
+      correo = jsonwebtoken.verify(token, process.env.JWT_SECRET)?.Correo
+      if (!correo) return res.status(401).json(false)
     } catch (error) {
-      console.error("Error validando sesión:", error.message);
-      res.status(401).json(false);
+      // Token vencido o no válido: el usuario debe autenticarse nuevamente.
+      return res.status(401).json(false)
+    }
+
+    try {
+      const result = await this.usuarioTuristaModel.obtenerUsuarioTuristaPorCorreo(correo)
+      const usuario = Array.isArray(result) ? result[0] : result
+      if (!usuario || typeof usuario !== 'object') return res.status(401).json(false)
+
+      // El navegador no necesita recibir el hash de la contraseña.
+      const { Contrasena, ...datosPublicos } = usuario
+      return res.json(datosPublicos)
+    } catch (error) {
+      console.error('Error consultando la sesión en Supabase:', error?.message || error)
+      return res.status(503).json({
+        error: 'El servicio de usuarios no está disponible temporalmente'
+      })
     }
   }
 
