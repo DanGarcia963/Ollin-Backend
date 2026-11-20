@@ -1,0 +1,21 @@
+name: Verificar Ollin Backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  static-check:
+    name: Node y Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar API Express y configuración
+        run: node scripts/check-backend.mjs
+      - name: Verificar sintaxis de scrapers de Python
+        run: python3 -m py_compile helpers/webScrapingPlaceID.py helpers/NightMuseums.py
