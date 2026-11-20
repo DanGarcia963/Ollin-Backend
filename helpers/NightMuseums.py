@@ -25,12 +25,11 @@ except ImportError:
 BASE_URL = "https://mexicocity.cdmx.gob.mx/tag/museum-night/?lang=es"
 BASE_URL_PAGE = "https://mexicocity.cdmx.gob.mx/tag/museum-night/page/{}/?lang=es"
 
-SUPABASE_URL = os.getenv("SUPABASE_URL") or "https://fugjkxnxfsnnnhnshxzg.supabase.co"
-SUPABASE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY") or "sb_publishable_NBQYqfAi42G2K-AsK0ZC5g_SPyEo46R"
+SUPABASE_URL = (os.getenv("SUPABASE_URL") or "https://ryulkebgdtiitpluexsv.supabase.co").rstrip("/").removesuffix("/rest/v1")
+SUPABASE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "").strip()
 
 SUPABASE_HEADERS = {
     "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
     "Content-Type": "application/json",
     "Prefer": "return=representation"
 }
