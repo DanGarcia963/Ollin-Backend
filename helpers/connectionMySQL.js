@@ -1,5 +1,4 @@
-const SUPABASE_URL = "https://fugjkxnxfsnnnhnshxzg.supabase.co";
-const SUPABASE_KEY = "sb_publishable_NBQYqfAi42G2K-AsK0ZC5g_SPyEo46R";
+import { SUPABASE_URL, SUPABASE_KEY } from './supabaseConfig.js'
 
 // Cliente genérico tipo "connection"
 export const connectionDB = {
