@@ -47,6 +47,7 @@ export class AuthenticatorAdminController {
   }
 
   loginAdmin = async (req, res) => {
+    try {
     const usuarioLogueado = await this.authenticatorAdminModel.loginAdmin({ entrada: req.body })
     
     if (typeof usuarioLogueado === 'string') {
@@ -66,6 +67,14 @@ export class AuthenticatorAdminController {
       token: token, 
       redirect: `${FRONTEND_URL}/inicioAdmin` 
     })
+
+    } catch (error) {
+      console.error('Error durante el login de administrador:', error?.message || error)
+      return res.status(503).json({
+        status: 503,
+        error: 'No se pudo consultar el servicio de autenticación. Intenta nuevamente.'
+      })
+    }
   }
 
   verificarCuenta = async (req, res) => {

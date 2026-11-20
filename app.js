@@ -148,9 +148,14 @@ app.post("/ejecutarScript", (req, res) => {
   // ==========================================
   // INICIO DEL SERVIDOR
   // ==========================================
-  const PORT = process.env.PORT ?? 1234
+  const PORT = process.env.PORT || 1234
 
-  app.listen(PORT, () => {
-    
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Ollin API escuchando en 0.0.0.0:${PORT}`)
+  })
+
+  server.on('error', (error) => {
+    console.error('No se pudo iniciar Ollin API:', error.message)
+    process.exitCode = 1
   })
 }

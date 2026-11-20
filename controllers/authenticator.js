@@ -47,6 +47,7 @@ export class AuthenticatorController {
   }
 
   login = async (req, res) => {
+    try {
     const usuarioLogueado = await this.authenticatorModel.login({ entrada: req.body })
 
     if (typeof usuarioLogueado === 'string') {
@@ -66,6 +67,14 @@ export class AuthenticatorController {
       redirect: `${FRONTEND_URL}/inicio`,
       token: token // Enviamos la llave maestra al frontend
     })
+
+    } catch (error) {
+      console.error('Error durante el login de turista:', error?.message || error)
+      return res.status(503).json({
+        status: 503,
+        error: 'No se pudo consultar el servicio de autenticación. Intenta nuevamente.'
+      })
+    }
   }
 
 verificarCuenta = async (req, res) => {
