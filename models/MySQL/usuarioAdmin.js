@@ -4,7 +4,6 @@ import { SUPABASE_URL, SUPABASE_KEY } from '../../helpers/supabaseConfig.js'
 
 const headers = {
   "apikey": SUPABASE_KEY,
-  "Authorization": `Bearer ${SUPABASE_KEY}`,
   "Content-Type": "application/json",
   "Prefer": "return=representation"
 };
