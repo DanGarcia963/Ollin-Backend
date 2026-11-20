@@ -9,7 +9,6 @@ export const connectionDB = {
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
       }
     });
 
@@ -23,7 +22,6 @@ export const connectionDB = {
       method: "POST",
       headers: {
         "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
         "Content-Type": "application/json",
         "Prefer": "return=representation"
       },
@@ -40,7 +38,6 @@ export const connectionDB = {
       method: "PATCH",
       headers: {
         "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(data)
@@ -56,7 +53,6 @@ export const connectionDB = {
       method: "DELETE",
       headers: {
         "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
       }
     });
 
