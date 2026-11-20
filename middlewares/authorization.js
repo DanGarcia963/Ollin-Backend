@@ -4,7 +4,7 @@ import { UsuarioTuristaModel } from '../models/MySQL/usuarioTurista.js'
 import { UsuarioAdminModel } from '../models/MySQL/usuarioAdmin.js'
 
 dotenv.config()
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://127.0.0.1:5500'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-tu-camino.netlify.app'
 
 export const soloAdmin = async (req, res, next) => {
   const logueado = await validarCookie(req)

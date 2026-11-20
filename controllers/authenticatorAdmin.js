@@ -6,7 +6,7 @@ import jsonwebtoken from 'jsonwebtoken'
 
 dotenv.config()
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-tt.netlify.app'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://ollin-tu-camino.netlify.app'
 
 export class AuthenticatorAdminController {
   constructor (Modelos) {
