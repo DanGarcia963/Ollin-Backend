@@ -3,8 +3,7 @@ import { UsuarioAdminModel } from '../MySQL/usuarioAdmin.js'
 
 const usuarioAdminModel = UsuarioAdminModel
 
-const SUPABASE_URL = "https://fugjkxnxfsnnnhnshxzg.supabase.co";
-const SUPABASE_KEY = "sb_publishable_NBQYqfAi42G2K-AsK0ZC5g_SPyEo46R";
+import { SUPABASE_URL, SUPABASE_KEY } from '../../helpers/supabaseConfig.js'
 
 const headers = {
   "apikey": SUPABASE_KEY,
