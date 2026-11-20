@@ -35,11 +35,18 @@ export class UsuarioTuristaModel {
   static async obtenerUsuarioTuristaPorCorreo (Correo) {
     const response = await fetch(
       `${SUPABASE_URL}/rest/v1/usuario_turista?Correo=eq.${encodeURIComponent(Correo)}`,
-      { method: "GET", headers }
+      { method: "GET", headers, signal: AbortSignal.timeout(12000) }
     )
 
+    if (!response.ok) {
+      throw new Error(`Supabase usuario_turista: HTTP ${response.status}`)
+    }
+
     const data = await response.json()
-    if (!data || data.length === 0) return false
+    if (!Array.isArray(data)) {
+      throw new Error('Respuesta inesperada de Supabase para usuario_turista')
+    }
+    if (data.length === 0) return false
     return data[0]
   }
 

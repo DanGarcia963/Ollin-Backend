@@ -25,13 +25,20 @@ export class UsuarioAdminModel {
       `${SUPABASE_URL}/rest/v1/administrador?Correo=eq.${encodeURIComponent(Correo)}`,
       {
         method: "GET",
-        headers
+        headers,
+        signal: AbortSignal.timeout(12000)
       }
     )
 
-    const data = await res.json()
+    if (!res.ok) {
+      throw new Error(`Supabase administrador: HTTP ${res.status}`)
+    }
 
-    if (!data || data.length === 0) return false
+    const data = await res.json()
+    if (!Array.isArray(data)) {
+      throw new Error('Respuesta inesperada de Supabase para administrador')
+    }
+    if (data.length === 0) return false
     return data[0]
   }
 
